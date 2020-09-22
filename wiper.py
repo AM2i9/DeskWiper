@@ -1,8 +1,17 @@
 import os
 import shutil
 from pathlib import Path
+import platform
 
-directory = "C:\\Users\\Patrick\\Desktop\\DesktWiper\\testfolder\\"
+OS = platform.system()
+seprator = ""
+
+if OS == "Linux":
+    seperator = "/"
+if OS == "Windows":
+    seperator = "\\"
+
+directory = "{}{1}Desktop{1}testfolder{1}".format(Path.home())
 
 def getDestinations(file_extensions):
 
@@ -23,13 +32,13 @@ def scan(directory):
     print(directory)
 
     for file in desktop:
-        if os.path.isfile(directory + "\\" + file):
+        if os.path.isfile(directory + "/" + file):
 
-            if Path(directory + "\\" + file).suffix not in file_extension_OUT:
-                if Path(directory + "\\" + file).suffix == "":
+            if Path(directory + "/" + file).suffix not in file_extension_OUT:
+                if Path(directory + "/" + file).suffix == "":
                     file_extension_OUT.append("NA")
                 else:
-                    file_extension_OUT.append(Path(directory + "\\" + file).suffix)
+                    file_extension_OUT.append(Path(directory + "/" + file).suffix)
     
     return file_extension_OUT
 

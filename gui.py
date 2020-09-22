@@ -8,7 +8,7 @@ class GUI:
     def __init__(self,root):
 
         self.root = root
-        self.directory = "C:\\Users\\Patrick\\Desktop"
+        self.directory = directory
         self.createWidgets()
         self.itemCount = 0
 
@@ -40,7 +40,7 @@ class GUI:
         self.folder_view_scrollbar.config(command=self.folder_view.yview)
 
         # Buttons
-        self.scanButton = Button(self.root, text="Scan", command= lambda: scan(self.directory))
+        self.scanButton = Button(self.root, text="Scan", command= lambda: print(scan(self.directory)))
 
         self.openFolderButton.pack(side=TOP)
         self.scanButton.pack(side=TOP)
