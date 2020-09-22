@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog,messagebox
 from wiper import *
 import os
 
@@ -11,6 +11,10 @@ class GUI:
         self.directory = directory
         self.createWidgets()
         self.itemCount = 0
+
+        self.file_extensions = []
+        self.movableExtensions = []
+        self.destinations = {}
 
     def createWidgets(self):
         # Buttom to open Select folder dialouge
@@ -40,7 +44,7 @@ class GUI:
         self.folder_view_scrollbar.config(command=self.folder_view.yview)
 
         # Buttons
-        self.scanButton = Button(self.root, text="Scan", command= lambda: print(scan(self.directory)))
+        self.scanButton = Button(self.root, text="Scan", command= lambda: self.start())
 
         self.openFolderButton.pack(side=TOP)
         self.scanButton.pack(side=TOP)
@@ -76,3 +80,124 @@ class GUI:
         self.folder_view_scrollbar.pack(side=LEFT,fill = BOTH)
         self.folder_view.config(yscrollcommand = self.folder_view_scrollbar.set)
         self.folder_view_scrollbar.config(command=self.folder_view.yview)
+
+    def start(self):
+        self.file_extensions = scan(self.directory)
+        self.DirSelectionScreen()
+
+    def DirSelectionScreen(self):
+
+        class entryBox(GUI):
+            def __init__(self, BFrame, extension):
+
+                self.extension = extension
+
+                self.dir = ""
+                self.frame = Frame(BFrame)
+                self.frame.pack(padx=10,pady=10)
+
+                label = Label(self.frame, text = extension)
+                self.entry = Entry(self.frame, textvariable = self.dir)
+                selectButton = Button(self.frame, text="...", command = lambda: self.setEntry(filedialog.askdirectory()))
+
+                label.pack(side=LEFT)
+                self.entry.pack(side=LEFT)
+                selectButton.pack(side=LEFT)
+
+            def setEntry(self,value):
+                self.entry.delete(0,END)
+                self.entry.insert(0,value)
+
+                self.dir = value
+
+        def A(self):
+
+            self.dirSelection = Toplevel()
+            self.dirSelection.title("DeskWiper")
+
+            self.movableExtensions = []
+
+            prompt = Label(self.dirSelection, text="Please enter which file extensions you would like to move:")
+            prompt.pack(side=TOP)
+
+            ok_button = Button(self.dirSelection,text="Ok", command = lambda: select_extenstions(self))
+            ok_button.pack(side=BOTTOM)
+
+            AAFRame = Frame(self.dirSelection,width=100)
+            AAFRame.pack(side=BOTTOM)
+
+            canvas = Canvas(AAFRame)
+            AFrame = Frame(canvas)
+            scrollbar = Scrollbar(AAFRame, orient="vertical",command=canvas.yview)
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            scrollbar.pack(side=RIGHT, fill=Y)
+            canvas.pack()
+            canvas.create_window((0,0),window=AFrame,anchor='nw')
+            AFrame.bind("<Configure>",canvas.configure(scrollregion=canvas.bbox("all"),width=200,height=200))
+
+            self.selected_extensions = []
+
+            for extension in self.file_extensions:
+                
+                intvar = IntVar()
+
+                self.selected_extensions.append(intvar)
+
+                chkbox = Checkbutton(AFrame, text=extension, var=self.selected_extensions[self.selected_extensions.index(intvar)])
+
+                chkbox.pack()
+
+        def B(self):
+
+            destroyTopLevel(self)
+            self.dirSelection = Toplevel()
+            self.dirSelection.title("DeskWiper")
+
+            ok_button = Button(self.dirSelection, text="Move Files", command=lambda: startMove(self))
+            label = Label(self.dirSelection, text="Please select where you would like to move the files:")
+            label.pack(side=TOP)
+
+            ok_button.pack(side=BOTTOM)
+            BFrame = Frame(self.dirSelection)
+            BFrame.pack(side=BOTTOM)
+
+            self.entryFrames = []
+
+            for extension in self.movableExtensions:
+                self.entryFrames.append(entryBox(BFrame, extension))
+
+        def startMove(self):
+            if messagebox.askokcancel("Starting move...","Are you sure you wish to continue? This will move all of your selected items."):
+                destroyTopLevel(self)
+                getDestinations(self)
+                self.move()
+
+        def getDestinations(self):
+            for entry in self.entryFrames:
+                self.destinations[entry.extension] = entry.dir
+
+        def destroyTopLevel(self):
+            self.dirSelection.destroy()
+
+        def select_extenstions(self):
+
+            self.movableExtensions = []
+
+            for extension in self.selected_extensions:
+                self.selected_extensions[self.selected_extensions.index(extension)] = extension.get()
+
+            for ex in self.file_extensions:
+
+                if self.selected_extensions[self.file_extensions.index(ex)] > 0:
+                    self.movableExtensions.append(ex)
+
+            B(self)
+
+        A(self)
+
+    def move(self):
+        print("move")
+        moveFiles(self.directory,self.movableExtensions,self.destinations)
+
+

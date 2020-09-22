@@ -11,18 +11,7 @@ if OS == "Linux":
 if OS == "Windows":
     seperator = "\\"
 
-directory = "{}{1}Desktop{1}testfolder{1}".format(Path.home())
-
-def getDestinations(file_extensions):
-
-    destinations_OUT = {}
-
-    for extension in file_extensions:
-
-        destinations_OUT[extension] = input("Enter the directory for {} files:".format(extension))
-    
-    return destinations_OUT
-
+directory = "{0}{1}Desktop{1}DeskWiper{1}testfolder{1}".format(Path.home(),seperator)
 
 def scan(directory):
 
@@ -32,14 +21,17 @@ def scan(directory):
     print(directory)
 
     for file in desktop:
-        if os.path.isfile(directory + "/" + file):
+        if os.path.isfile(directory + seperator + file):
 
-            if Path(directory + "/" + file).suffix not in file_extension_OUT:
-                if Path(directory + "/" + file).suffix == "":
-                    file_extension_OUT.append("NA")
+            if Path(directory + seperator + file).suffix not in file_extension_OUT:
+                if Path(directory + seperator + file).suffix == "":
+                    file_extension_OUT.append("No Extension")
                 else:
-                    file_extension_OUT.append(Path(directory + "/" + file).suffix)
-    
+                    file_extension_OUT.append(Path(directory + seperator + file).suffix)
+        else:
+            if "Directory" not in file_extension_OUT:
+                file_extension_OUT.append("Directory")
+
     return file_extension_OUT
 
 def moveFiles(directory, file_extensions, destinations):
@@ -47,18 +39,14 @@ def moveFiles(directory, file_extensions, destinations):
     desktop = os.listdir(directory)
 
     for file in desktop:
-        if os.path.isfile(directory + file):
-            fileName = str(file)
+        filedir = directory+seperator+file
+        suffix = ""
 
-            splitFileName = fileName.split(".")
+        if os.path.isfile(filedir):
+            if (suffix := Path(directory + seperator + file).suffix) == "":
+                suffix = "No Extension"
+        else:
+            suffix = "Directory"
 
-            try:
-                fileEX = splitFileName[1]
-
-                if destinations.get(fileEX):
-                    shutil.move(directory + file, destinations.get(fileEX))
-
-            except IndexError:
-
-                if destinations.get("NA"):
-                    shutil.move(directory + file, destinations.get("NA"))
+        if suffix in file_extensions:
+            shutil.move(filedir,destinations[suffix] + seperator + file)
