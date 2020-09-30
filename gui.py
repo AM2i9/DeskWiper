@@ -1,3 +1,11 @@
+# -----------------------------------------------------------------------------
+# Hello there! And welcome to the nightmare I call my code!
+# Please, don't steal my code and claim it as your own, not that
+# this is code that you would want to claim as your own
+# © Patrick Brennan (AM2i9)
+# https://github.com/AM2i9/DeskWiper
+#-------------------------------------------------------------------------------
+
 from tkinter import *
 from tkinter import filedialog,messagebox
 from wiper import *
@@ -64,6 +72,9 @@ class GUI:
 
         # These next lines remove the parts of the folder view and repack them with the right values and in the right place
         # Its 10pm, I don't have anymore braincells left to describe this
+
+        # Ok, its a week later and now I can explain it
+        # These next few lines recreate the directory label and count under the item list
         self.itemCountLabel.destroy()
         self.directoryLabel.destroy()
 
@@ -73,21 +84,23 @@ class GUI:
         self.directoryLabel = Label(self.folder_view_frame, text = self.directory)
         self.directoryLabel.pack(side=BOTTOM)
 
+        #Recreates the folder view
         self.folder_view.pack_forget()
         self.folder_view.pack(side= LEFT, fill = BOTH)
 
+        # Recreates the scrollbar
         self.folder_view_scrollbar.pack_forget()
         self.folder_view_scrollbar.pack(side=LEFT,fill = BOTH)
         self.folder_view.config(yscrollcommand = self.folder_view_scrollbar.set)
         self.folder_view_scrollbar.config(command=self.folder_view.yview)
 
-    def start(self):
+    def start(self): # Function to start the movement process
         self.file_extensions = scan(self.directory)
         self.DirSelectionScreen()
 
-    def DirSelectionScreen(self):
+    def DirSelectionScreen(self): # Under this function is alllllllllllllllll of the things that happen when you click start
 
-        class entryBox(GUI):
+        class entryBox(GUI): # For later in the code. It was easier to create a class to do this for each individual extension
             def __init__(self, BFrame, extension,x,y):
 
                 self.extension = extension
@@ -98,20 +111,22 @@ class GUI:
 
                 label = Label(self.frame, text = extension)
                 self.entry = Entry(self.frame, textvariable = self.dir)
+
+                # Button to open a file dialoge
                 selectButton = Button(self.frame, text="...", command = lambda: self.setEntry(filedialog.askdirectory()))
 
                 label.pack(side=LEFT)
                 self.entry.pack(side=LEFT)
                 selectButton.pack(side=LEFT)
 
-            def setEntry(self,value):
+            def setEntry(self,value): # Sets the text of the entry, for once you have selected one
                 self.entry.delete(0,END)
                 self.entry.insert(0,value)
 
                 self.dir = value
 
-        def A(self):
-
+        def A(self): # Part A! I could not come up with a better name for this, and I was tired, so here we are
+            # Part A is where you select the file extensions you wish to move
             self.dirSelection = Toplevel()
             self.dirSelection.title("DeskWiper")
 
@@ -131,6 +146,7 @@ class GUI:
             x = 0
             y = 0
 
+            # Creates a checkbox grid for each extension
             for extension in self.file_extensions:
 
                 print(x,y)
@@ -149,8 +165,8 @@ class GUI:
                     y = y + 1
                     x = 0
 
-        def B(self):
-
+        def B(self): # And here we are at the sequel. Honestly, I think these function names are better than most movie names
+            # In part B, you select where you would like to move the extensions you selected in part A
             destroyTopLevel(self)
             self.dirSelection = Toplevel()
             self.dirSelection.title("DeskWiper")
@@ -168,6 +184,7 @@ class GUI:
             x = 0
             y = 0
 
+            # Once again, creating a grid
             for extension in self.movableExtensions:
                 self.entryFrames.append(entryBox(BFrame, extension,x,y))
 
@@ -176,20 +193,22 @@ class GUI:
                     y = y + 1
                     x = 0
 
-        def startMove(self):
+        def startMove(self): #Well... A second Start... oh well
+
+            # WeLl Of CoUrSe WeRe GoNnA aSk YoU "ARE YOU SURE YOU WISH TO DESTROY YOUR ORGANIZED DESKTOP?!?!"
             if messagebox.askokcancel("Starting move...","Are you sure you wish to continue? This will move all of your selected items."):
                 destroyTopLevel(self)
                 getDestinations(self)
                 self.move()
 
-        def getDestinations(self):
+        def getDestinations(self): # Getting the directories from part B
             for entry in self.entryFrames:
                 self.destinations[entry.extension] = entry.dir
 
-        def destroyTopLevel(self):
+        def destroyTopLevel(self): # Destroy the windows created by A and B
             self.dirSelection.destroy()
 
-        def select_extenstions(self):
+        def select_extenstions(self): # Get the selected extensions from part A, and then run part B
 
             self.movableExtensions = []
 
@@ -203,12 +222,12 @@ class GUI:
 
             B(self)
 
-        A(self)
+        A(self) # It all begins at the end
 
-    def move(self):
+    def move(self): # FINALLY. THE FUNCTION THAT ACTUALLY STARTS THE MOVE
         print("move")
         if not moveFiles(self.directory,self.movableExtensions,self.destinations):
-            messagebox.showerror("ERROR","An error occured in moving your files")
+            messagebox.showerror("ERROR","An error occured in moving your files") # Yup. Just not gonna tell you the error
         else:
             messagebox.showinfo("Success", "Your files have been moved.")
 
