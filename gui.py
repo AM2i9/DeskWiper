@@ -44,7 +44,7 @@ class GUI:
         self.folder_view_scrollbar.config(command=self.folder_view.yview)
 
         # Buttons
-        self.scanButton = Button(self.root, text="Scan", command= lambda: self.start())
+        self.scanButton = Button(self.root, text="Start", command= lambda: self.start())
 
         self.openFolderButton.pack(side=TOP)
         self.scanButton.pack(side=TOP)
@@ -88,13 +88,13 @@ class GUI:
     def DirSelectionScreen(self):
 
         class entryBox(GUI):
-            def __init__(self, BFrame, extension):
+            def __init__(self, BFrame, extension,x,y):
 
                 self.extension = extension
 
                 self.dir = ""
                 self.frame = Frame(BFrame)
-                self.frame.pack(padx=10,pady=10)
+                self.frame.grid(row=y,column=x,padx=10,pady=10)
 
                 label = Label(self.frame, text = extension)
                 self.entry = Entry(self.frame, textvariable = self.dir)
@@ -123,22 +123,17 @@ class GUI:
             ok_button = Button(self.dirSelection,text="Ok", command = lambda: select_extenstions(self))
             ok_button.pack(side=BOTTOM)
 
-            AAFRame = Frame(self.dirSelection,width=100)
-            AAFRame.pack(side=BOTTOM)
-
-            canvas = Canvas(AAFRame)
-            AFrame = Frame(canvas)
-            scrollbar = Scrollbar(AAFRame, orient="vertical",command=canvas.yview)
-            canvas.configure(yscrollcommand=scrollbar.set)
-
-            scrollbar.pack(side=RIGHT, fill=Y)
-            canvas.pack()
-            canvas.create_window((0,0),window=AFrame,anchor='nw')
-            AFrame.bind("<Configure>",canvas.configure(scrollregion=canvas.bbox("all"),width=200,height=200))
+            AFrame = Frame(self.dirSelection)
+            AFrame.pack()
 
             self.selected_extensions = []
 
+            x = 0
+            y = 0
+
             for extension in self.file_extensions:
+
+                print(x,y)
                 
                 intvar = IntVar()
 
@@ -146,7 +141,13 @@ class GUI:
 
                 chkbox = Checkbutton(AFrame, text=extension, var=self.selected_extensions[self.selected_extensions.index(intvar)])
 
-                chkbox.pack()
+                chkbox.grid(column=x,row=y)
+
+                x = x + 1
+
+                if x > 3:
+                    y = y + 1
+                    x = 0
 
         def B(self):
 
@@ -164,8 +165,16 @@ class GUI:
 
             self.entryFrames = []
 
+            x = 0
+            y = 0
+
             for extension in self.movableExtensions:
-                self.entryFrames.append(entryBox(BFrame, extension))
+                self.entryFrames.append(entryBox(BFrame, extension,x,y))
+
+                x = x + 1
+                if x > 1:
+                    y = y + 1
+                    x = 0
 
         def startMove(self):
             if messagebox.askokcancel("Starting move...","Are you sure you wish to continue? This will move all of your selected items."):
@@ -198,6 +207,9 @@ class GUI:
 
     def move(self):
         print("move")
-        moveFiles(self.directory,self.movableExtensions,self.destinations)
+        if not moveFiles(self.directory,self.movableExtensions,self.destinations):
+            messagebox.showerror("ERROR","An error occured in moving your files")
+        else:
+            messagebox.showinfo("Success", "Your files have been moved.")
 
 

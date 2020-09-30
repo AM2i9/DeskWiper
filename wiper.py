@@ -36,17 +36,26 @@ def scan(directory):
 
 def moveFiles(directory, file_extensions, destinations):
     
-    desktop = os.listdir(directory)
+    try:
+        desktop = os.listdir(directory)
 
-    for file in desktop:
-        filedir = directory+seperator+file
-        suffix = ""
+        for file in desktop:
+            filedir = directory+seperator+file
+            suffix = ""
 
-        if os.path.isfile(filedir):
-            if (suffix := Path(directory + seperator + file).suffix) == "":
-                suffix = "No Extension"
-        else:
-            suffix = "Directory"
+            if os.path.isfile(filedir):
+                if (suffix := Path(directory + seperator + file).suffix) == "":
+                    suffix = "No Extension"
+            else:
+                suffix = "Directory"
 
-        if suffix in file_extensions:
-            shutil.move(filedir,destinations[suffix] + seperator + file)
+            if suffix in file_extensions:
+                shutil.move(filedir,destinations[suffix] + seperator + file)
+
+        return True
+    
+    except:
+        
+        return False
+
+    
