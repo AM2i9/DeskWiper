@@ -223,7 +223,6 @@ class GUI:
         A(self) # It all begins at the end
 
     def move(self): # FINALLY. THE FUNCTION THAT ACTUALLY STARTS THE MOVE
-        print("move")
         if not moveFiles(self.directory,self.movableExtensions,self.destinations):
             messagebox.showerror("ERROR","An error occured in moving your files") # Yup. Just not gonna tell you the error
         else:
