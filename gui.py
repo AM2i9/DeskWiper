@@ -148,8 +148,6 @@ class GUI:
 
             # Creates a checkbox grid for each extension
             for extension in self.file_extensions:
-
-                print(x,y)
                 
                 intvar = IntVar()
 
